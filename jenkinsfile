@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    parameters {
+        choice(
+            choices: ['SpecificBox' , 'V3-TestBox', 'V5-TestBox'],
+            description: 'Where do you want to run the job',
+            name: 'BOX-GROUP')
+        string(
+            description: 'If you choose SpecificBox then you must fiil the box number',
+            name: 'BOX-NUMBER')
+    }
+
+    stages {
+        stage ('Group-Deploy') {
+            steps {
+                script {
+
+                    stage("deploy-on-${params.BOX-GROUP}"){
+                        when {
+                            // Only say hello if a "greeting" is requested
+                                expression { params.BOX-GROUP != 'SpecificBox' }
+                        }
+                        steps {
+                            echo "Hello, ${params.BOX-GROUP}!"
+                        }
+                    }
+                    
+                }
+            }
+        }
+        stage ('Single-Deploy') {
+            steps {
+                script {
+                    stage("deploy-on-${params.BOX-NUMBER}"){
+                        when {
+                            // Only say hello if a "greeting" is requested
+                            expression { params.REQUESTED_ACTION == 'SpecificBox' }
+                        }
+                        steps {
+                            echo "Hello, ${params.BOX-NUMBER}!"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
